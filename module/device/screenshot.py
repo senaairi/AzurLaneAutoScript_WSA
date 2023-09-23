@@ -101,6 +101,26 @@ class Screenshot(Adb, WSA, DroidCast, AScreenCap, Scrcpy):
     def screenshot_deque(self):
         return deque(maxlen=int(self.config.Error_ScreenshotLength))
 
+    def _handle_wsa_image(self, image):
+        """
+        Args:
+            image (np.ndarray):
+        Returns:
+            np.ndarray:
+        """
+        width, height = image_size(self.image)
+
+        if not self._screen_size_checked:
+            return image
+
+        if self.config.Emulator_Serial != 'wsa-0' or (width == 1280 and height == 720):
+            return image
+
+        # Trim screenshots only after screen size was checked
+        # and if they are both from WSA and not already 1280x720
+        image = image[0:720, 0:1280]
+        return image
+
     def save_screenshot(self, genre='items', interval=None, to_base_folder=False):
         """Save a screenshot. Use millisecond timestamp as file name.
 
@@ -207,6 +227,7 @@ class Screenshot(Adb, WSA, DroidCast, AScreenCap, Scrcpy):
                     continue
             elif self.config.Emulator_Serial == 'wsa-0':
                 self.display_resize_wsa(0)
+                self._screen_size_checked = True
                 return False
             elif hasattr(self, 'app_is_running') and not self.app_is_running():
                 logger.warning('Received orientated screenshot, game not running')
@@ -252,21 +273,5 @@ class Screenshot(Adb, WSA, DroidCast, AScreenCap, Scrcpy):
         else:
             self._screen_black_checked = True
             return True
-    def _handle_wsa_image(self, image):
-        """
-        Args:
-            image (np.ndarray):
-        Returns:
-            np.ndarray:
-        """
-        width, height = image_size(self.image)
 
-        if not self._screen_size_checked:
-            return image
 
-        if self.config.Emulator_Serial != 'wsa-0' or (width == 1280 and height == 720):
-            return image
-
-        # Trim screenshots only after screen size was checked
-        # and if they are both from WSA and not already 1280x720
-        image = image[0:720, 0:1280]
