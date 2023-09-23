@@ -174,5 +174,4 @@ class WSA(Connection):
             user32.MoveWindow(hwnd, XPos, YPos, HRes, VRes, True)
             VRes = VRes + 1
             HRes = HRes + 1
-            win32gui.SetWindowPos(hwnd, None, XPos, YPos, HRes, VRes, win32con.SWP_FRAMECHANGED | win32con.SWP_NOZORDER |
-                                  win32con.SWP_NOOWNERZORDER)
+            win32gui.SetWindowPos(hwnd, None, XPos, YPos, HRes, VRes, win32con.SWP_FRAMECHANGED | win32con.SWP_NOZORDER | win32con.SWP_NOOWNERZORDER)
